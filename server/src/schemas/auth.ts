@@ -2,9 +2,9 @@ import { z } from 'zod';
 
 export const Email = z.string().email();
 export const Password = z.string().min(8, 'Password must be at least 8 characters');
-export const Name = z.string().min(1).max(255).optional();
-export const Jurisdiction = z.string().max(255).optional();
-export const BarNumber = z.string().max(255).optional();
+export const Name = z.string().optional();
+export const Jurisdiction = z.string().optional();
+export const BarNumber = z.string().optional();
 
 export const CreateUserBaseSchema = z.object({
   email: Email,

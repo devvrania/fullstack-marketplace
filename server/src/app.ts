@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import pinoHttp from 'pino-http';
 import { env } from './config/env';
 import { authRouter } from './routes/auth.routes';
+import { clientCasesRouter } from './routes/case.routes';
 
 export const app = express();
 
@@ -14,12 +15,12 @@ app.use(cors({ origin: env.webOrigin, credentials: true }));
 app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
 app.use(pinoHttp());
-app.use('/auth', authRouter);
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
-// TODO: mount routes here, e.g.
-// app.use('/auth', authRouter);
+// TODO: mount routes here
+app.use('/auth', authRouter);
+app.use('/client', clientCasesRouter);
 
 app.use((_req, res) => res.status(404).json({ message: 'Not found' }));
 
