@@ -3,13 +3,14 @@ import { DataSource } from 'typeorm';
 import { env } from '../config/env';
 import { User } from '../entities/user.entity';
 import { Case } from '../entities/case.entity';
+import { Quote } from '../entities/quote.entity';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
   url: env.dbUrl,
   synchronize: false, // NEVER true in tests/submission; use migrations
   logging: false,
-  entities: [User, Case],
+  entities: [User, Case, Quote],
   migrations: ['src/db/migrations/*.ts'],
 });
 
