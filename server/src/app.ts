@@ -18,6 +18,23 @@ app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
 app.use(pinoHttp());
 
+// Explicit root responder to avoid any edge cases around routing precedence
+app.use((req, res, next) => {
+  if (req.method === 'GET' && req.path === '/') {
+    return res.json({
+      message: 'Legal Marketplace API',
+      version: '1.0.0',
+      endpoints: {
+        health: '/health',
+        auth: '/auth/*',
+        client: '/client/*',
+        lawyer: '/lawyer/*',
+      },
+    });
+  }
+  return next();
+});
+
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
 // TODO: mount routes here

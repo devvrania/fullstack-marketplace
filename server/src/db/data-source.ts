@@ -11,7 +11,7 @@ export const AppDataSource = new DataSource({
   synchronize: false, // NEVER true in tests/submission; use migrations
   logging: false,
   entities: [User, Case, Quote],
-  migrations: ['src/db/migrations/*.ts'],
+  migrations: ['dist/db/migrations/*.js'],
 });
 
 let initializing: Promise<DataSource> | null = null;
