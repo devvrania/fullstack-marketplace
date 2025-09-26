@@ -6,8 +6,10 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   Index,
+  OneToMany,
 } from 'typeorm';
 import { User } from './user.entity';
+import { CaseFile } from './caseFile.entity';
 
 export type CaseStatus = 'open' | 'engaged' | 'closed' | 'cancelled';
 
@@ -43,4 +45,7 @@ export class Case {
 
   @CreateDateColumn()
   createdAt!: Date;
+
+  @OneToMany(() => CaseFile, (f) => f.case)
+  files!: CaseFile[];
 }

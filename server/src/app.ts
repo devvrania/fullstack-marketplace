@@ -9,6 +9,7 @@ import { authRouter } from './routes/auth.routes';
 import { clientCasesRouter } from './routes/case.routes';
 import { lawyerMarketplaceRouter } from './routes/lawyer.marketplace.routes';
 import { lawyerQuotesRouter } from './routes/lawyer.quote.routes';
+import { lawyerCasesRouter } from './routes/lawyer.case.routes';
 
 export const app = express();
 
@@ -36,6 +37,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
+app.get('/test', (_req, res) => res.json({ ok: true, message: "Hello" }));
 
 // TODO: mount routes here
 app.use('/auth', authRouter);
@@ -43,6 +45,7 @@ app.use('/client', clientCasesRouter);
 
 app.use('/lawyer', lawyerMarketplaceRouter);
 app.use('/lawyer', lawyerQuotesRouter);
+app.use('/lawyer', lawyerCasesRouter);
 
 app.use((_req, res) => res.status(404).json({ message: 'Not found' }));
 

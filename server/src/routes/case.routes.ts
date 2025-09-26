@@ -3,6 +3,7 @@ import { requireAuth, requireRole } from '../middleware/auth';
 import { casesService } from '../services/case.service';
 import { CreateCaseSchema, ListMyCasesQuerySchema } from '../schemas/case';
 import { z } from 'zod';
+import { caseFilesService } from '../services/caseFile.service';
 
 const router = Router();
 const IdParamSchema = z.object({ id: z.string().uuid() });
@@ -44,6 +45,35 @@ router.get('/cases/:id', requireAuth, requireRole('client'), async (req, res, ne
             createdAt: kase.createdAt,
         });
     } catch (e) { next(e); }
+});
+
+router.post('/cases/:id/files', requireAuth, requireRole('client'), async (req, res, next) => {
+    try {
+        console.log('POST /cases/:id/files route hit', req.params, req.body);
+        const { id: caseId } = IdParamSchema.parse(req.params);
+        // Check if case exists and is owned by user
+        const kase = await casesService.getMineById(req.user!.id, caseId);
+        if (!kase) return res.status(404).json({ message: 'Case not found' });
+        const { filename, originalName, mimeType, size } = req.body;
+        const file = await caseFilesService.create(caseId, { filename, originalName, mimeType, size });
+        res.status(201).json(file);
+    } catch (e) {
+        next(e);
+    }
+});
+
+router.get('/cases/:id/files', requireAuth, requireRole('client'), async (req, res, next) => {
+    try {
+        console.log('GET /cases/:id/files route hit', req.params);
+        const { id: caseId } = IdParamSchema.parse(req.params);
+        // Check if case exists and is owned by user
+        const kase = await casesService.getMineById(req.user!.id, caseId);
+        if (!kase) return res.status(404).json({ message: 'Case not found' });
+        const files = await caseFilesService.listByCase(caseId);
+        res.json(files);
+    } catch (e) {
+        next(e);
+    }
 });
 
 export { router as clientCasesRouter };
