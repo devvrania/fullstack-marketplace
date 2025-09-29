@@ -6,10 +6,11 @@ import cookieParser from 'cookie-parser';
 import pinoHttp from 'pino-http';
 import { env } from './config/env';
 import { authRouter } from './routes/auth.routes';
-import { clientCasesRouter } from './routes/case.routes';
+import { clientCasesRouter } from './routes/client.case.routes';
 import { lawyerMarketplaceRouter } from './routes/lawyer.marketplace.routes';
 import { lawyerQuotesRouter } from './routes/lawyer.quote.routes';
 import { lawyerCasesRouter } from './routes/lawyer.case.routes';
+import { clientQuotesRouter } from './routes/client.quote.routes';
 
 export const app = express();
 
@@ -42,6 +43,7 @@ app.get('/test', (_req, res) => res.json({ ok: true, message: "Hello" }));
 // TODO: mount routes here
 app.use('/auth', authRouter);
 app.use('/client', clientCasesRouter);
+app.use('/client', clientQuotesRouter);
 
 app.use('/lawyer', lawyerMarketplaceRouter);
 app.use('/lawyer', lawyerQuotesRouter);

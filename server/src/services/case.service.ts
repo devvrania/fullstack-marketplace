@@ -1,5 +1,5 @@
 import { AppDataSource } from '../db/data-source';
-import { Case } from '../entities/case.entity';
+import { Case, CaseStatus } from '../entities/case.entity';
 import { CreateCaseInput, ListMyCasesQuery } from '../schemas/case';
 import { redact } from '../utils/redact';
 import { normalizePage, PageResult } from '../utils/pagination';
@@ -41,4 +41,16 @@ export const casesService = {
         const kase = await repo.findOne({ where: { id: caseId, clientId } });
         return kase; // null if not found / not owned
     },
+
+    async updateStatus(caseId: string, status: CaseStatus) {
+        const repo = AppDataSource.getRepository(Case);
+        await repo.update({ id: caseId }, { status });
+    },
+    
+    async getEngagedCaseByLawyer(lawyerId: string, caseId: string) {
+        const repo = AppDataSource.getRepository(Case);
+        return await repo.findOne({
+            where: { id: caseId, lawyerId, status: 'engaged' },
+        });
+    }
 };

@@ -11,7 +11,7 @@ import {
 import { User } from './user.entity';
 import { CaseFile } from './caseFile.entity';
 
-export type CaseStatus = 'open' | 'engaged' | 'closed' | 'cancelled';
+export type CaseStatus = 'open' | 'accepted' | 'engaged' | 'completed' | 'closed' | 'cancelled';
 
 @Entity('cases')
 export class Case {
@@ -48,4 +48,11 @@ export class Case {
 
   @OneToMany(() => CaseFile, (f) => f.case)
   files!: CaseFile[];
+
+  @Column({ type: 'uuid', nullable: true })
+  lawyerId!: string | null;
+  
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'lawyerId' })
+  lawyer!: User | null;
 }

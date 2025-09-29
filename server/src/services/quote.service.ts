@@ -50,4 +50,27 @@ export const quotesService = {
         const [items, total] = await qb.getManyAndCount();
         return { items, page, pageSize, total };
     },
+
+    async acceptQuote(clientId: string, quoteId: string) {
+        const quoteRepo = AppDataSource.getRepository(Quote);
+        const caseRepo = AppDataSource.getRepository(Case);
+
+        const quote = await quoteRepo.findOne({
+            where: { id: quoteId },
+            relations: ['case'],
+        });
+        if (!quote) throw new Error('Quote not found');
+        if (quote.case.clientId !== clientId) throw new Error('Unauthorized');
+
+        // Mark case as engaged with this lawyer
+        await caseRepo.update(quote.caseId, {
+            status: 'accepted',
+            lawyerId: quote.lawyerId,
+        });
+
+        // Optionally mark quote as accepted
+        await quoteRepo.update(quoteId, { status: 'accepted' });
+
+        return { success: true };
+    },
 };

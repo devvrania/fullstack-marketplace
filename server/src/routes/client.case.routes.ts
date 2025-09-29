@@ -76,4 +76,15 @@ router.get('/cases/:id/files', requireAuth, requireRole('client'), async (req, r
     }
 });
 
+router.post('/cases/:id/close', requireAuth, requireRole('client'), async (req, res, next) => {
+    try {
+        const { id: caseId } = IdParamSchema.parse(req.params);
+        const kase = await casesService.getMineById(req.user!.id, caseId);
+        if (!kase) return res.status(404).json({ message: 'Case not found' });
+
+        await casesService.updateStatus(caseId, 'completed');
+        res.json({ success: true, status: 'closed' });
+    } catch (e) { next(e); }
+});
+
 export { router as clientCasesRouter };
