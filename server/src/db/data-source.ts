@@ -5,13 +5,14 @@ import { User } from '../entities/user.entity';
 import { Case } from '../entities/case.entity';
 import { Quote } from '../entities/quote.entity';
 import { CaseFile } from '../entities/caseFile.entity';
+import { CaseHistory } from '../entities/caseHistory.entity';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
   url: env.dbUrl,
   synchronize: false, // NEVER true in tests/submission; use migrations
   logging: false,
-  entities: [User, Case, Quote, CaseFile],
+  entities: [User, Case, Quote, CaseFile, CaseHistory],
   migrations: ['dist/db/migrations/*.js'],
 });
 

@@ -3,29 +3,29 @@ import { Case } from "../entities/case.entity";
 import { CaseFile } from "../entities/caseFile.entity";
 
 export const caseFilesService = {
-    async create(caseId: string, input: { filename: string; originalName: string; mimeType: string; size: number }) {
-        const repo = AppDataSource.getRepository(CaseFile);
+  async create(caseId: string, input: { filename: string; originalName: string; mimeType: string; size: number }) {
+    const repo = AppDataSource.getRepository(CaseFile);
 
-        const file = repo.create({
-            caseId,
-            filename: input.filename,
-            originalName: input.originalName,
-            mimeType: input.mimeType,
-            size: input.size,
-        });
+    const file = repo.create({
+      caseId,
+      filename: input.filename,
+      originalName: input.originalName,
+      mimeType: input.mimeType,
+      size: input.size,
+    });
 
-        return await repo.save(file);
-    },
+    return await repo.save(file);
+  },
 
-    async listByCase(caseId: string) {
-        const repo = AppDataSource.getRepository(CaseFile);
-        return await repo.find({
-            where: { caseId },
-            order: { createdAt: 'DESC' },
-        });
-    },
+  async listByCase(caseId: string) {
+    const repo = AppDataSource.getRepository(CaseFile);
+    return await repo.find({
+      where: { caseId },
+      order: { createdAt: 'DESC' },
+    });
+  },
 
-    async listByCaseForLawyer(lawyerId: string, caseId: string) {
+  async listByCaseForLawyer(lawyerId: string, caseId: string) {
     const caseRepo = AppDataSource.getRepository(Case);
     const kase = await caseRepo.findOne({
       where: { id: caseId },
@@ -34,7 +34,7 @@ export const caseFilesService = {
 
     if (!kase) throw Object.assign(new Error('Case not found'), { status: 404 });
 
-    if (kase.status !== 'engaged') {
+    if (kase.status !== 'accepted') {
       throw Object.assign(new Error('Case not engaged'), { status: 403 });
     }
 
@@ -45,4 +45,10 @@ export const caseFilesService = {
       order: { createdAt: 'DESC' },
     });
   },
+
+  async getById(fileId: string) {
+    const repo = AppDataSource.getRepository(CaseFile);
+    return await repo.findOne({ where: { id: fileId } });
+  },
+
 };

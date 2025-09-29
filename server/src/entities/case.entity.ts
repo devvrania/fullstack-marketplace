@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { CaseFile } from './caseFile.entity';
+import { CaseHistory } from './caseHistory.entity';
 
 export type CaseStatus = 'open' | 'accepted' | 'engaged' | 'completed' | 'closed' | 'cancelled';
 
@@ -51,8 +52,11 @@ export class Case {
 
   @Column({ type: 'uuid', nullable: true })
   lawyerId!: string | null;
-  
+
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'lawyerId' })
   lawyer!: User | null;
+
+  @OneToMany(() => CaseHistory, (history) => history.kase)
+  history!: CaseHistory[];
 }

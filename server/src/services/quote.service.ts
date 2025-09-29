@@ -3,6 +3,7 @@ import { Quote } from '../entities/quote.entity';
 import { UpsertQuoteInput, MyQuotesQuery } from '../schemas/quote';
 import { normalizePage, PageResult } from '../utils/pagination';
 import { Case } from '../entities/case.entity';
+import { caseHistoryService } from './caseHistory.service';
 
 export const quotesService = {
     /** Upsert a quote: one per (lawyer, case). Status resets to 'proposed' if updated. */
@@ -32,6 +33,8 @@ export const quotesService = {
             q.status = 'proposed';
         }
 
+        await caseHistoryService.log(q.caseId, "quote_proposed", lawyerId, "Quote submitted");
+
         return await repo.save(q);
     },
 
@@ -51,6 +54,14 @@ export const quotesService = {
         return { items, page, pageSize, total };
     },
 
+    async listByCase(caseId: string) {
+        const repo = AppDataSource.getRepository(Quote);
+        return repo.find({
+            where: { caseId },
+            order: { createdAt: 'DESC' },
+        });
+    },
+
     async acceptQuote(clientId: string, quoteId: string) {
         const quoteRepo = AppDataSource.getRepository(Quote);
         const caseRepo = AppDataSource.getRepository(Case);
@@ -64,12 +75,14 @@ export const quotesService = {
 
         // Mark case as engaged with this lawyer
         await caseRepo.update(quote.caseId, {
-            status: 'accepted',
+            status: 'engaged',
             lawyerId: quote.lawyerId,
         });
 
         // Optionally mark quote as accepted
         await quoteRepo.update(quoteId, { status: 'accepted' });
+
+        await caseHistoryService.log(quote.caseId, "engaged", clientId, "Client engaged lawyer");
 
         return { success: true };
     },
