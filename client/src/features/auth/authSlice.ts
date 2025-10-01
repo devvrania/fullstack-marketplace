@@ -21,6 +21,11 @@ export const login = createAsyncThunk(
   }
 );
 
+export const fetchCurrentUser = createAsyncThunk("auth/me", async () => {
+  const res = await api.get("/auth/me", { withCredentials: true });
+  return res.data;
+});
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -40,11 +45,14 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
+        state.user = action.payload;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(fetchCurrentUser.fulfilled, (state, action) => {
+        state.user = action.payload;
       });
   },
 });

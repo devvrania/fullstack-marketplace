@@ -6,6 +6,7 @@ import {
   SignupLawyerSchema,
   LoginSchema,
 } from '../schemas/auth';
+import { requireAuth } from '../middleware/auth';
 
 const router = Router();
 
@@ -68,6 +69,10 @@ router.post('/login', async (req, res, next) => {
   } catch (e) {
     next(e);
   }
+});
+
+router.get('/me', requireAuth, async (req, res) => {
+  res.json(req.user);
 });
 
 router.post('/logout', (req, res) => {

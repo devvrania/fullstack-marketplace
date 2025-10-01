@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hook";
 import { useNavigate } from "react-router-dom";
 import Input from "../../components/Input";
@@ -8,15 +8,27 @@ import { login } from "../../features/auth/authSlice";
 const LoginPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useAppSelector((s) => s.auth);
+  const { loading, error, user } = useAppSelector((s) => s.auth);
   const [form, setForm] = useState({ email: "", password: "" });
+
+  useEffect(() => {
+    // If already logged in, redirect to dashboard
+    if (user) {
+      if (user.role === "client") {
+        navigate("/client/dashboard", { replace: true });
+      } else if (user.role === "lawyer") {
+        navigate("/lawyer/marketplace", { replace: true });
+      }
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = await dispatch(login(form));
-    if (login.fulfilled.match(result)) {
-      const role = result.payload.role;
-      navigate(role === "client" ? "/client/dashboard" : "/lawyer/marketplace");
+    try {
+      await dispatch(login(form)).unwrap();
+      // user state will update and useEffect will handle redirect
+    } catch (err) {
+      console.error("Login failed:", err);
     }
   };
 
