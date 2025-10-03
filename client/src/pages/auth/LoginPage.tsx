@@ -5,7 +5,7 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { login } from "../../features/auth/authSlice";
 
-const LoginPage = () => {
+const  LoginPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { loading, error, user } = useAppSelector((s) => s.auth);
@@ -50,9 +50,8 @@ const LoginPage = () => {
             placeholder="Password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
-            required
+            required  
           />
-          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           <Button type="submit" loading={loading}>Login</Button>
         </form>
 

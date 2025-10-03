@@ -1,12 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import api from "../../api/axios";
 import type { AxiosError } from "axios";
+import { useAppSelector } from "../../store/hook";
 
 const SignupPage = () => {
     const navigate = useNavigate();
+    const { user } = useAppSelector((s) => s.auth);
+
+    useEffect(() => {
+        // If already logged in, redirect to dashboard
+        if (user) {
+            if (user.role === "client") {
+                navigate("/client/dashboard", { replace: true });
+            } else if (user.role === "lawyer") {
+                navigate("/lawyer/marketplace", { replace: true });
+            }
+        }
+    }, [user, navigate]);
+
+
     const [role, setRole] = useState<"client" | "lawyer">("client");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
